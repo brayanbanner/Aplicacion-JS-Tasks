@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta charset="UTF-8">
+	<title>App Con JS</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!-- <link rel="stylesheet" href="estilos.css"> -->
+	<link rel="stylesheet" type="text/css" href="https://brayanbanner.github.io/stared-css/stared.css">
+	<!-- BrayanBanner App Basics with JavaScript -->
+</head>
+<body class="alv">
+
+	<div class="mb-1 border-1">
+		<div class="container-fluid p-1 f-justify-space-between f-align-center">
+			<a class="navbar-brand cl-black">App De Tareas</a>
+			<div class="swicth">
+				<div class="circle"></div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row container">
+		<form class="form-js form-group col-4">
+			<input type="text" class="form-control titulo" placeholder="Titulo De La Nota">
+			<textarea class="form-control texto" placeholder="Descripcion o nota" cols="30" rows="10"></textarea> 
+			<input type="submit" value="Guardar" class="btn btn-blue btn-block">
+		</form>
+		<div class="col-min-8">
+			<div class="contenido"></div>
+		</div>
+	</div>
+
+
+	<div class="fond-body">
+		<div class="popup"></div>
+	</div>
+
+	<script src="https://brayanbanner.github.io/stared-css/stared.js"></script>
+	<script>
+		
+var formulario = document.querySelector('.form-js');
+let content = document.querySelector('.contenido');
+
+formulario.addEventListener('submit', init);
+formulario.classList.add('h-100');
+
+var banner = [];
+
+function init(e){
+	e.preventDefault();
+
+	let titulo = document.querySelector('.titulo').value;
+	let texto = document.querySelector('.texto').value;
+
+	var arr = {
+		titulo,
+		texto
+	};
+	banner.push(arr);
+
+
+	content.innerHTML += 
+	`
+		<div class="ela">
+			<div class="card container-fluid">
+				<p class="nota">
+					<h4 class="titulo-nota text-center bb-1">${arr.titulo}</h4>
+					<p class="texto-nota p-1">${arr.texto}</p>
+				</p>
+				<a class="btn btn-green" onclick="editar('${arr.titulo}')">Editar</a>
+				<a class="btn btn-red" onclick="borrar('${arr.titulo}')">Borrar</a>
+				<a class="btn btn-blue salvar" onclick="guardar('${arr.titulo}', '${arr.texto}'), salve('${arr.titulo}');">Salvar</a>
+			</div>
+		</div>
+	`;
+
+	formulario.reset();
+
+	// new Notification('Nota Guardada exitosamente');
+};
+
+function editar(nota){
+	openWind();
+	for (let i = 0; i < banner.length; i++) {
+		if(nota == banner[i].titulo){
+			let titulo = document.querySelectorAll('.titulo-nota')[i].textContent;
+			let texto = document.querySelectorAll('.texto-nota')[i].textContent;
+
+
+			document.querySelector('.popup').innerHTML = 
+			`
+				<div class="element">
+					<p class="text-center mb-1">Cambiar informacion</p>
+					<form action=""  class="form-edit form-control m-0">
+						<input type="text" value="`+ titulo +`" class="form-control titulo2" placeholder="Titulo"/>
+						<input type="text" class="form-control texto2" value="`+ texto +`" placeholder="Texto"/>
+						<button type="submit" class="btn btn-blue btn-block">Guardar Cambios</button>
+					</form>
+				</div>
+			`
+			;
+			// BrayanBanner edit with JS(JavaScript)
+			// BrayanBanner web
+			// formulario aqui abajo
+			document.querySelector('.form-edit').addEventListener('submit', function(alv){
+				alv.preventDefault();
+				let titulo = document.querySelectorAll('.titulo-nota')[i];
+				let texto = document.querySelectorAll('.texto-nota')[i];
+
+				let infoTitle = document.querySelector('.titulo2').value;
+				let infoTexto = document.querySelector('.texto2').value;
+
+				titulo.innerHTML = infoTitle;
+				texto.innerHTML = infoTexto;
+
+				// final (CloseWindows)
+
+				closeWind();
+			});
+		}
+	}
+	editarLocal(nota);
+};
+
+function editarLocal(title){
+	if(localStorage.getItem('notas') != null){
+		const notas = JSON.parse(localStorage.getItem('notas'));
+
+		for (var i = 0; i < notas.length; i++) {
+			if(notas[i].titulo == title){
+				let title = notas[i].titulo;
+		    let description = notas[i].texto;
+				let popup = document.querySelector('.popup');
+
+				popup.innerHTML = 
+				`
+					<div class="info">
+						<form class="form-editar">
+							<h3 class="mb-1 text-center">Editar Guardado</h3>
+							<input type="text" class="form-control uno" placeholder="Titulo Nuevo" value="${title}"/>
+							<textarea class="form-control dos" placeholder="contenido nuevo" cols="30" rows="10">${description}</textarea>
+							<button type="submit" class="btn btn-block btn-blue" onclick="closeWind();">Guardar Cambios</button>
+						</form>
+					</div>
+				`
+				;
+				var here = i;
+				document.querySelector('.form-editar').addEventListener('submit', function(e){
+					e.preventDefault();
+					let uno = document.querySelector('.uno').value;
+					let dos = document.querySelector('.dos').value;
+
+					notas[here].titulo = uno;
+					notas[here].texto = dos;
+
+					localStorage.setItem('notas', JSON.stringify(notas));
+
+					let changeTitle = document.querySelectorAll('.changeTitle');
+					let changeText = document.querySelectorAll('.changeText');
+
+					changeTitle[here].textContent = uno;
+					changeText[here].textContent = dos;
+				});
+			}
+		}
+	};
+};
+
+function guardar(titulo, texto){
+	var todo = {
+		titulo,
+		texto
+	};
+	if(localStorage.getItem('notas') === null){
+		var save = [];
+		save.push(todo);
+		localStorage.setItem('notas', JSON.stringify(save));
+	}else {
+		var save = JSON.parse(localStorage.getItem('notas'));
+		save.push(todo);
+		localStorage.setItem('notas', JSON.stringify(save));
+	}
+}
+
+function borrar(title){
+	for (let i = 0; i < banner.length; i++) {
+		if(banner[i].titulo === title){
+			document.querySelectorAll('.ela')[i].innerHTML = '';
+			banner.splice(i, 1);
+		};
+	}
+	borrarLocal(title);
+};
+
+function borrarLocal(titulo){
+	const notesLocal = JSON.parse(localStorage.getItem('notas'));
+	for (let i = 0; i < notesLocal.length; i++) {
+		if(titulo === notesLocal[i].titulo){
+			notesLocal.splice(i, 1);
+			localStorage.setItem('notas', JSON.stringify(notesLocal));
+		}
+	}
+	obtener();
+};
+
+
+function obtener() {
+	const notes = JSON.parse(localStorage.getItem('notas'));
+  content.innerHTML = '';
+  for(let i = 0; i < notes.length; i++) {
+    let title = notes[i].titulo;
+    let description = notes[i].texto;
+
+    content.innerHTML += 
+    `
+    <div class="ela card container-fluid f-justify-space-between f-align-center mb-1">
+      <p>
+				<strong>Titulo - </strong> <span class="changeTitle">${title}</span>  
+				<strong>contenido - </strong> <span class="changeText">${description}</span>
+      </p>
+      <div class="botones">
+				<a class="btn btn-green" onclick="editarLocal('${title}'), openWind();">Editar</a>
+				<a class="btn btn-red" onclick="borrar('${title}')">Borrar</a>
+      </div>
+    </div>
+    `;
+	}
+}
+obtener();
+
+function salve(salvado){
+	for (let i = 0; i < banner.length; i++) {
+		if(banner[i].titulo == salvado){
+			var sal = document.querySelectorAll('.salvar')[i];
+			sal.classList.remove('btn-blue');
+			sal.innerHTML = 'salvado';
+			sal.classList.add('btn-yellow');
+		};
+	}
+};
+
+function consola(message){
+	console.log(message);
+}
+
+	</script>
+</body>
+</html>
